@@ -1,35 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bloggingapp-deployment
+  name: node-app
 spec:
+  replicas: 2
   selector:
     matchLabels:
-      app: bloggingapp
-  replicas: 2
+      app: node-app
   template:
     metadata:
       labels:
-        app: bloggingapp
+        app: node-app
     spec:
       containers:
-        - name: bloggingapp
-          image: pandi33/fullstack-app:latest # Updated image to private DockerHub image
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8080
-      imagePullSecrets:
-        - name: regcred # Reference to the Docker registry secret
+      - name: node-app
+        image: pandi33/node-app:latest
+        ports:
+        - containerPort: 3000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: bloggingapp-ssvc
+  name: node-app-service
 spec:
-  selector:
-    app: bloggingapp
-  ports:
-    - protocol: "TCP"
-      port: 80
-      targetPort: 8080 
   type: NodePort
+  selector:
+    app: node-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+      nodePort: 30080   # Optional: specify nodePort if you want a fixed port
